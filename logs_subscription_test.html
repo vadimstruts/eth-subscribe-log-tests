@@ -1,0 +1,112 @@
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<style>
+.marpad{
+    margin: 5px;
+    padding: 5px;
+}
+.border{
+    border-style: groove;
+}
+.logs{
+    margin: 5px;
+}
+.subsitem{
+    max-width: 800px;
+}
+.lconsole{
+    max-width:100%;
+    width:100%;
+    height:500px;
+}
+.json-input{
+    width:100%;
+}
+</style>
+
+<script type="text/javascript">
+
+function createNewSubscriptionItem(caller){
+    let subsitem = $(caller).closest("div.templates").find("div.subsitem").clone();
+    subsitem.appendTo("div.root");
+    subsitem.show();
+}
+
+function appendLog(lconsole, text, title){
+    lconsole.append("\r\n\r\n-------------------" + (title ? title : "") + "----------------------------------\r\n");
+    lconsole.append(JSON.stringify(text));
+    let currentvalue = $(lconsole).closest("div.subsitem").find("label.logscount");
+    let intVal = parseInt(currentvalue.text());
+    currentvalue.text(++intVal);    
+}
+function setNewSubscription(caller){
+    var json_input = $(caller).closest("div").find("input.json-input");
+    var lconsole = $(caller).closest("div").find("textarea.lconsole");
+
+    window.ethereum.on('message', (x, y, z) => {
+        console.log('message event: ', x.data.subscription);            
+        appendLog($("." + x.data.subscription).find("textarea.lconsole"), x, "message event for: " + x.data.subscription);
+    });
+
+    var request = null;
+    if(json_input && json_input.val().length > 0){
+        request = $.parseJSON(json_input.val());
+    } else {
+        request = $.parseJSON('{ "id":1, "method":"eth_subscribe", "params":["logs"]}');
+    }
+
+    appendLog(lconsole, request, "Subscription Request");
+
+    window.ethereum.send(request, (t,x,r)=> {
+        console.log(t,x,r);
+        let label_subsid = $(caller).closest("div").find("label.subsid");
+        label_subsid.text(x.result);
+        $(caller).closest("div").addClass(x.result);
+        appendLog(lconsole, x, "Subscription Response");
+    });
+}
+function unSubscribe(caller){
+    var request = { id:1, method: 'eth_unsubscribe', params:[]};
+    var label_subsid = $(caller).closest("div").find("label.subsid");
+    var lconsole = $(caller).closest("div").find("textarea.lconsole");
+    request.params = [ label_subsid.text() ];
+    window.ethereum.send(request, (t,x,r) => {
+        console.log(t,x,r);
+        appendLog(lconsole, x, "Unsubscribe Request");
+    });
+}
+
+</script>
+</head>
+
+<body>
+<div class="templates">
+    <div style="display:none;">
+        <div class="subsitem border marpad">
+            <div>
+                <label>Json:</label>
+                <input class="json-input" type="text" value='{ "id":1, "method":"eth_subscribe", "params":["logs"]}'/>
+                <button onClick="setNewSubscription(this)">Subscribe</button>
+                <button onClick="unSubscribe(this)">UnSubscribe</button>
+                <div class="marpad">
+                    <label>ID:</label><label class="subsid"></label>
+                </div>
+                <div class="marpad counter">
+                    <label>Logs Count:</label><label class="logscount">0</label>
+                </div>
+                <div class="logs">
+                    <textarea class="lconsole"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div><button onClick="createNewSubscriptionItem(this)">New</button></div>
+</div>
+<div class="root">  
+    <div>
+        <p>Ex:</p>
+        <p>{ &quot;id&quot;:1, &quot;method&quot;:&quot;eth_subscribe&quot;, &quot;params&quot;:[&quot;logs&quot;, {&quot;address&quot;: &quot;0xec4f56369c550b2ca7fb8b6be17ba312c65d3cc0&quot;}]}</p>
+        <p>{ &quot;id&quot;:1, &quot;method&quot;:&quot;eth_subscribe&quot;, &quot;params&quot;:[&quot;logs&quot;, {&quot;address&quot;: &quot;0xec4f56369c550b2ca7fb8b6be17ba312c65d3cc0&quot;, &quot;topics&quot;:  [&quot;0x2edcb8328dc82dc24d7a2b50a94f19db11146048d396320228feb7c79c3301e1&quot;]}]}</p>
+    </div>
+</div>
+</body>
