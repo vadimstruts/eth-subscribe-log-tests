@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+    <style>
+        #resp-table {
+            display: table;
+        }
+        #resp-table-body{
+            display: table-row-group;
+        }
+        .resp-table-row{
+            display: table-row;
+        }
+        .table-body-cell{
+            display: table-cell;
+            padding: 8px;
+            line-height: 1.42857143;
+            vertical-align: top;
+        }
+    </style>
+  </head>
+  <body>
+    <script>
+    const getEthereumProvider = async () => {
+        if ("ethereum" in window) {
+          
+          await window.ethereum.enable(); // opens wallet to connect to
+
+          const provider = window.ethereum;
+          if (provider.isBraveWallet) {
+            console.log("Is Brave installed?  ", provider.isBraveWallet);
+            return provider;
+          }
+        } else {
+          document.write('Install Brave wallet');
+        }
+      };
+
+    const getSolanaProvider = async () => {
+        if ("solana" in window) {
+          
+          await window.solana.connect(); // opens wallet to connect to
+
+          const provider = window.solana;
+          if (provider.isBraveWallet) {
+            console.log("Is Brave installed?  ", provider.isBraveWallet);
+            return provider;
+          }
+        } else {
+          document.write('Install Brave wallet');
+        }
+      };
+
+
+    const connect = (provider) => {
+
+        provider.then(provider => {
+          console.log('key', provider.publicKey.toString())
+        })
+        .catch(function(error){
+          console.log(error)
+        });
+
+      }
+      
+    </script>
+    <div id="resp-table">
+        <div id="resp-table-body">
+            <div class="resp-table-row">
+                <div class="table-body-cell">
+                    <button onClick="connect(getSolanaProvider())">Connect SOL</button>
+                </div>
+                <div class="table-body-cell">Click to connect as Solana Dapp</div>
+            </div>
+            <div class="resp-table-row">
+                <div class="table-body-cell">
+                    <button onClick="connect(getEthereumProvider())">Connect ETH</button>
+                </div>
+                <div class="table-body-cell">Click to connect as Ethereum Dapp</div>
+            </div>
+        </div>
+    </div>
+  </body>
+</html>
