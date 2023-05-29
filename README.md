@@ -2,18 +2,13 @@
 
 For manually testing different Ethereum commands.
 
-1. Run server
-   - Python 2        
-         python -m SimpleHTTPServer 8081
-   - Python 3      
-         python3 -m http.server 8081
-         
-   To run HTTPS server (needs root permissions):
-         python3 https-server.py         
+1. To run HTTPS server (needs root permissions):
+   
+   `python3 https-server.py`
 
 ## Logs test page:
 
-1. Load up http://localhost:8081/logs_subscription_test.html
+1. Load up `http://localhost:8081/logs_subscription_test.html`
 
 2. Edit subscribe expression and then click subscribe button
 
@@ -21,7 +16,7 @@ For manually testing different Ethereum commands.
 
 ## Solana + Ethereum dapp connection page:
 
-1. Load up http://localhost:8081/sol_dapp_connect_to_wallet.html
+1. Load up `http://localhost:8081/sol_dapp_connect_to_wallet.html`
 
 2. Open F12 console to monithor exceptions
 
