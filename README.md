@@ -8,7 +8,7 @@ For manually testing different Ethereum commands.
 
 ## Logs test page:
 
-1. Load up `http://localhost:8081/logs_subscription_test.html`
+1. Load up `http://localhost:4443/logs_subscription_test.html`
 
 2. Edit subscribe expression and then click subscribe button
 
@@ -16,7 +16,7 @@ For manually testing different Ethereum commands.
 
 ## Solana + Ethereum dapp connection page:
 
-1. Load up `http://localhost:8081/sol_dapp_connect_to_wallet.html`
+1. Load up `http://localhost:4443/sol_dapp_connect_to_wallet.html`
 
 2. Open F12 console to monithor exceptions
 
