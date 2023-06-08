@@ -1,0 +1,124 @@
+<html>
+  <head>
+  <!--   <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js"></script>-->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.2.7/web3.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/8.0.0/bignumber.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <style>
+        #resp-table {
+            display: table;
+        }
+        #resp-table-body{
+            display: table-row-group;
+        }
+        .resp-table-row{
+            display: table-row;
+        }
+        .table-body-cell{
+            display: table-cell;
+            padding: 8px;
+            line-height: 1.42857143;
+            vertical-align: top;
+        }
+    </style>
+  </head>
+  <body>
+    <script>
+    const getEthereumProvider = async () => {
+        if ("ethereum" in window) {
+          
+          await window.ethereum.enable(); // opens wallet to connect to
+
+          const provider = window.ethereum;
+          if (provider.isBraveWallet) {
+            console.log("Brave wallet connected, chain_id:" + provider.chainId + " account:" + provider.selectedAddress);
+            return provider;
+          }
+        } else {
+          document.write('Install Brave wallet');
+        }
+      };
+
+    const connectToWallet = (caller, provider) => {
+
+        provider.then(provider => {
+          $(caller).closest('div.resp-table-row').find(".status-label").html('ON');
+          $(caller).closest('div.resp-table-row').find(".connected-account").html(provider.selectedAddress);
+          
+          SwitchNetwork('0x1')
+          .then(() => createAllowance(provider));
+          
+        })
+        .catch(function(error){
+          console.log(error)
+        });
+
+      }
+    const SwitchNetwork = async (_chainId) => {
+        let chainId = _chainId;
+        await window.ethereum
+        .request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: chainId }],
+        })
+        .then(() => console.log("Successfully! Connected to the requested Network"))
+        .catch((err) => {
+            if (err.message.startsWith("Unrecognized chain ID")) {
+            addNewNetwork();
+            }
+        });
+    };
+    
+    const createAllowance = (provider) => {
+        const web3 = new Web3(provider);
+        
+        const approveAbi = [{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"unpause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"account","type":"address"}],"name":"isPauser","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"paused","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"renouncePauser","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"account","type":"address"}],"name":"addPauser","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"pause","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"owner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"name","type":"string"},{"name":"symbol","type":"string"},{"name":"decimals","type":"uint8"},{"name":"totalSupply","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"account","type":"address"}],"name":"Paused","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"account","type":"address"}],"name":"Unpaused","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"account","type":"address"}],"name":"PauserAdded","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"account","type":"address"}],"name":"PauserRemoved","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"owner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"value","type":"uint256"}],"name":"Approval","type":"event"}];        
+        
+        const contract = new web3.eth.Contract(approveAbi, "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0");
+        
+        web3.eth.getAccounts(function(error, accounts) {
+            if(error) {
+                console.log(error);
+            }
+            
+            web3.eth.getBalance(accounts[0]).then(function(result){
+            console.log( "Balance : " ,web3.utils.fromWei(result, 'ether'));
+            });
+        });
+ 
+        const toAddress = //TODO get account address from input;
+        
+        // Calculate contract compatible value for approve with proper decimal points using BigNumber
+const tokenDecimals = web3.utils.toBN(18);
+const tokenAmountToApprove = web3.utils.toBN(0000000000000000002);
+const calculatedApproveValue = web3.utils.toHex(tokenAmountToApprove.mul(web3.utils.toBN(10).pow(tokenDecimals)));
+
+        web3.eth.getAccounts().then((accounts) => {
+            contract.methods.approve(
+                toAddress, 
+                calculatedApproveValue
+            ).send({from: accounts[0]})
+            .once('transactionHash', (hash) => { console.log(hash); })
+            .once('receipt', (receipt) => { console.log(receipt); });
+        });
+     }
+    
+    </script>
+    <div id="resp-table">
+        <div id="resp-table-body">
+            <div class="resp-table-row">
+                <div class="table-body-cell">
+                    <div class="status-label">OFF</div>
+                    <div class="connected-account">Ox095894579</div>
+                </div>
+                
+                <div class="table-body-cell">
+                    <button onClick="connectToWallet(this, getEthereumProvider())">Connect ETH</button>
+                </div>
+                
+                <div class="table-body-cell">Click to connect as Ethereum Dapp</div>
+            </div>
+        </div>
+    </div>
+  </body>
+</html>
